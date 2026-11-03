@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 test('mobile full journey: comparison → payment → delivery → segment → WhatsApp → return',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:3108');await page.getByRole('button',{name:'开始体验 →'}).click();
- await expect(page.getByRole('heading',{name:/藏鲜于简/})).toBeVisible();
+ await expect(page.getByRole('heading',{name:/科技有温度/})).toBeVisible();
  await page.locator('[data-compare="1"]').click();await page.locator('[data-compare="2"]').click();await page.locator('#compare').click();await expect(page.getByRole('heading',{name:'冰箱参数对比'})).toBeVisible();await expect(page.getByRole('cell',{name:'520 L',exact:true})).toBeVisible();await page.locator('#only-differences').check();await expect(page.getByRole('cell',{name:'额定电压',exact:true})).toBeHidden();await expect(page.getByRole('cell',{name:'520 L',exact:true})).toBeVisible();await page.locator('.close').click();
  await page.locator('[data-add="1"]').click();await page.locator('#cart').click();await page.getByRole('button',{name:'提交订单',exact:true}).click();await expect(page.getByRole('heading',{name:'模拟收银台'})).toBeVisible();
  await page.locator('#pay-failure').click();await expect(page.locator('#pay-feedback')).toContainText('模拟支付失败');await page.locator('#pay-cancel').click();await expect(page.getByRole('heading',{name:'我的订单',exact:true})).toBeVisible();await page.getByRole('button',{name:'继续模拟支付'}).click();await page.locator('#pay-method').selectOption({label:'DuitNow QR（模拟）'});await page.locator('#pay-success').click();await expect(page.getByRole('heading',{name:'模拟付款成功'})).toBeVisible();
@@ -10,7 +10,7 @@ test('mobile full journey: comparison → payment → delivery → segment → W
  await page.locator('[data-view="我的"]').click();await expect(page.getByText('顾客已签收',{exact:true})).toBeVisible();
  await page.locator('[data-view="客户"]').click();await expect(page.getByRole('cell').filter({hasText:'体验顾客'})).toBeVisible();
  await page.locator('[data-view="营销"]').click();await page.getByRole('button',{name:'保存活动草稿',exact:true}).click();await page.getByRole('button',{name:'模拟发送到 WhatsApp'}).click();await expect(page.getByText('已模拟发送 · 3 人')).toBeVisible();
- await page.locator('[data-view="消息"]').click();await page.locator('[data-message]').first().click();await expect(page.locator('.bubble')).toContainText('JAPANDI 家电体验日');await page.locator('#unsubscribe').click();await page.locator('[data-message]').first().click();await expect(page.locator('#unsubscribe')).toContainText('已退订');await page.locator('#offer-link').click();await expect(page.getByRole('heading',{name:/藏鲜于简/})).toBeVisible();
+ await page.locator('[data-view="消息"]').click();await page.locator('[data-message]').first().click();await expect(page.locator('.bubble')).toContainText('JAPANDI 家电体验日');await page.locator('#unsubscribe').click();await page.locator('[data-message]').first().click();await expect(page.locator('#unsubscribe')).toContainText('已退订');await page.locator('#offer-link').click();await expect(page.getByRole('heading',{name:/科技有温度/})).toBeVisible();
  await page.reload();await page.locator('[data-view="我的"]').click();await expect(page.getByText('顾客已签收',{exact:true})).toBeVisible();expect(errors).toEqual([]);
  await page.screenshot({path:'artifacts/mobile-orders.png',fullPage:true});
 });

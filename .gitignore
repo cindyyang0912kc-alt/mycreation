@@ -6,3 +6,4 @@ public/qr.js
 artifacts/
 test-results/
 playwright-report/
+public/media-manifest.js
