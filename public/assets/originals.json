@@ -1,0 +1,22 @@
+{
+  "products": {
+    "original": "图片1.jpg",
+    "sha256": "13342f444ef61e8ead32d3ed0cbd7b2bb39b0b48a6f208befbfbc748f9233305",
+    "bytes": 40123
+  },
+  "living": {
+    "original": "图片2.jpg",
+    "sha256": "0069c4d13ca47639dc8ae5fd8907dadd5556fa542ffa4a4164e419701a4e2937",
+    "bytes": 119984
+  },
+  "laundry": {
+    "original": "图片3.jpg",
+    "sha256": "7b01456dbbfa5058686d438bd33d3aec890bd07e9d803c1582fe88d80530c294",
+    "bytes": 154791
+  },
+  "kitchen": {
+    "original": "图片4.jpg",
+    "sha256": "cacadaaac09656af4cb6d9c825cef43654a62b035703599550b7396e5c8bfde2",
+    "bytes": 181539
+  }
+}
