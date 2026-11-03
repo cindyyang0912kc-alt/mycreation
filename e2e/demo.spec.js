@@ -1,0 +1,17 @@
+import {test,expect} from '@playwright/test';
+test('mobile full journey: comparison → payment → delivery → segment → WhatsApp → return',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:3108');await page.getByRole('button',{name:'开始体验 →'}).click();
+ await expect(page.getByRole('heading',{name:'发现好物，悦享生活'})).toBeVisible();
+ await page.locator('[data-compare="1"]').click();await page.locator('[data-compare="2"]').click();await page.locator('#compare').click();await expect(page.getByRole('heading',{name:'商品参数对比'})).toBeVisible();await expect(page.getByRole('cell',{name:'40 小时'})).toBeVisible();await page.locator('.close').click();
+ await page.locator('[data-add="1"]').click();await page.locator('#cart').click();await page.getByRole('button',{name:'提交订单',exact:true}).click();await expect(page.getByRole('heading',{name:'模拟收银台'})).toBeVisible();
+ await page.locator('#pay-failure').click();await expect(page.locator('#pay-feedback')).toContainText('模拟支付失败');await page.locator('#pay-cancel').click();await expect(page.getByRole('heading',{name:'我的订单',exact:true})).toBeVisible();await page.getByRole('button',{name:'继续模拟支付'}).click();await page.locator('#pay-method').selectOption({label:'DuitNow QR（模拟）'});await page.locator('#pay-success').click();await expect(page.getByRole('heading',{name:'模拟付款成功'})).toBeVisible();
+ await page.locator('#to-store').click();page.on('dialog',d=>d.accept());await page.getByRole('button',{name:'开始配送',exact:true}).click();await page.getByRole('button',{name:'确认送达',exact:true}).click();await expect(page.getByText('配送已完成',{exact:true})).toBeVisible();
+ await page.locator('[data-view="我的"]').click();await expect(page.getByText('顾客已签收',{exact:true})).toBeVisible();
+ await page.locator('[data-view="客户"]').click();await expect(page.getByRole('cell').filter({hasText:'体验顾客'})).toBeVisible();
+ await page.locator('[data-view="营销"]').click();await page.getByRole('button',{name:'保存活动草稿',exact:true}).click();await page.getByRole('button',{name:'模拟发送到 WhatsApp'}).click();await expect(page.getByText('已模拟发送 · 3 人')).toBeVisible();
+ await page.locator('[data-view="消息"]').click();await page.locator('[data-message]').first().click();await expect(page.locator('.bubble')).toContainText('周末好物节');await page.locator('#unsubscribe').click();await page.locator('[data-message]').first().click();await expect(page.locator('#unsubscribe')).toContainText('已退订');await page.locator('#offer-link').click();await expect(page.getByRole('heading',{name:'发现好物，悦享生活'})).toBeVisible();
+ await page.reload();await page.locator('[data-view="我的"]').click();await expect(page.getByText('顾客已签收',{exact:true})).toBeVisible();expect(errors).toEqual([]);
+ await page.screenshot({path:'artifacts/mobile-orders.png',fullPage:true});
+});
+test('QR encodes public URL and mobile has no horizontal overflow',async({page})=>{await page.goto('http://127.0.0.1:3108');await page.getByRole('button',{name:'开始体验 →'}).click();await page.locator('#qr').click();await page.locator('#store-url').fill('https://example.com/mycreation/');await page.locator('#copy-link').click();await expect(page.locator('#qr-result img')).toBeVisible();await page.locator('.close').click();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:'artifacts/mobile-store.png',fullPage:true});});
