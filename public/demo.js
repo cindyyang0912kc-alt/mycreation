@@ -1,11 +1,11 @@
 import {products} from './catalog.js';
 export {products};
 export const DEMO=true;
-const KEY='shiguang-my-demo-v2';
+const KEY='shiguang-japandi-demo-v3';
 const initial=()=>({orders:[],campaigns:[],messages:[],customers:[{id:'c1',name:'陈晓（示例）',phone:'+60 12-000 0001',segment:'高价值客户',orders:12,spent:859900,consent:true},{id:'c2',name:'林雨（示例）',phone:'+60 12-000 0002',segment:'新客',orders:1,spent:45900,consent:true},{id:'c3',name:'王晨（示例）',phone:'+60 12-000 0003',segment:'沉睡客户',orders:3,spent:189900,consent:false}]});
 export function state(){try{const d=JSON.parse(localStorage.getItem(KEY));return d?.customers&&Array.isArray(d.orders)?d:initial();}catch{return initial();}}
 function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
-export function reset(){save(initial());localStorage.removeItem('cart');}
+export function reset(){save(initial());localStorage.removeItem('japandi-cart-v3');}
 export function setConsent(id,consent){const d=state(),c=d.customers.find(c=>c.id===id);if(c)c.consent=consent;save(d);}
 export function setSegment(id,segment){if(!['新客','高价值客户','沉睡客户'].includes(segment))throw Error('无效分群');const d=state(),c=d.customers.find(c=>c.id===id);if(c)c.segment=segment;save(d);}
 export function readMessage(id){const d=state(),m=d.messages.find(m=>m.id===id);if(m)m.status='已读（模拟）';save(d);}
