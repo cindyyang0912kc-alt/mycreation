@@ -1,0 +1,23 @@
+import {products} from './catalog.js';
+export {products};
+export const DEMO=true;
+const KEY='shiguang-my-demo-v2';
+const initial=()=>({orders:[],campaigns:[],messages:[],customers:[{id:'c1',name:'陈晓（示例）',phone:'+60 12-000 0001',segment:'高价值客户',orders:12,spent:859900,consent:true},{id:'c2',name:'林雨（示例）',phone:'+60 12-000 0002',segment:'新客',orders:1,spent:45900,consent:true},{id:'c3',name:'王晨（示例）',phone:'+60 12-000 0003',segment:'沉睡客户',orders:3,spent:189900,consent:false}]});
+export function state(){try{const d=JSON.parse(localStorage.getItem(KEY));return d?.customers&&Array.isArray(d.orders)?d:initial();}catch{return initial();}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+export function reset(){save(initial());localStorage.removeItem('cart');}
+export function setConsent(id,consent){const d=state(),c=d.customers.find(c=>c.id===id);if(c)c.consent=consent;save(d);}
+export function setSegment(id,segment){if(!['新客','高价值客户','沉睡客户'].includes(segment))throw Error('无效分群');const d=state(),c=d.customers.find(c=>c.id===id);if(c)c.segment=segment;save(d);}
+export function readMessage(id){const d=state(),m=d.messages.find(m=>m.id===id);if(m)m.status='已读（模拟）';save(d);}
+export function sendCampaign(id){const d=state(),c=d.campaigns.find(c=>c.id===id);if(!c)throw Error('活动不存在');if(c.sent)return {message:'此活动已模拟发送，请新建活动再试'};const recipients=d.customers.filter(u=>u.consent&&(c.segment==='全部客户'||u.segment===c.segment));if(!recipients.length)throw Error('该分群没有已授权的客户，请先在客户页面开启模拟授权');const created=new Date().toISOString();for(const u of recipients)d.messages.unshift({id:crypto.randomUUID(),campaign:id,customer:u.id,name:u.name,message:c.message,status:'已送达（模拟）',created});c.sent=true;c.count=recipients.length;save(d);return {message:`已模拟送达 ${recipients.length} 位已授权客户，可在消息预览查看`};}
+export function payment(id,outcome,method){const d=state(),o=d.orders.find(o=>o.id===id);if(!o)throw Error('订单不存在');if(o.status!=='待支付')throw Error('该订单已支付，无需重复支付');if(outcome==='cancel')return {message:'已取消支付，订单保留，可稍后重试'};if(outcome==='failure')return {message:'模拟支付失败：余额不足，请重试或更换方式'};o.status='已确认收款';o.paymentMethod=method;o.paid=new Date().toISOString();o.timeline.push({title:'模拟支付成功 · '+method,time:o.paid});let c=d.customers.find(c=>c.phone===o.phone);if(!c){c={id:crypto.randomUUID(),name:o.customer,phone:o.phone,segment:'新客',orders:0,spent:0,consent:o.consent};d.customers.push(c);}c.orders++;c.spent+=o.total;c.consent=o.consent;if(c.spent>=150000)c.segment='高价值客户';save(d);return {message:'模拟支付成功，门店已收到演示订单'};}
+export async function demoApi(path,method='GET',body){const d=state();
+if(path==='products')return products;
+if(path.startsWith('qr?')){const u=new URL(new URLSearchParams(path.split('?')[1]).get('url'));if(u.protocol!=='https:'||['localhost','127.0.0.1'].includes(u.hostname))throw Error('请提供公开 HTTPS 商城网址');return {image:await globalThis.StoreQRCode.toDataURL(u.href,{width:320,margin:2})};}
+if(path==='orders'&&method==='POST'){if(!body.customer?.trim()||!/^\+?60[\d -]{8,14}$/.test(body.phone||'')||!body.address?.trim()||!body.items?.length)throw Error('请填写姓名、+60 马来西亚电话及配送地址');let total=0;const items=body.items.map(i=>{const p=products.find(p=>p.id===i.id);if(!p||!Number.isInteger(i.qty)||i.qty<1||i.qty>99)throw Error('商品数量无效');total+=p.price*i.qty;return {...i,name:p.name,price:p.price};});const created=new Date().toISOString();const o={id:'MY-'+crypto.randomUUID().slice(0,8).toUpperCase(),customer:body.customer,phone:body.phone,address:body.address,consent:body.consent===true,items,total,status:'待支付',created,timeline:[{title:'订单已创建',time:created}]};d.orders.unshift(o);save(d);return o;}
+if(path==='admin/orders')return d.orders;
+if(path.startsWith('admin/orders/')&&method==='PATCH'){const o=d.orders.find(o=>o.id===path.split('/').pop());if(!o)throw Error('订单不存在');if(body.status!==({'待支付':'已确认收款','已确认收款':'配送中','配送中':'已完成'}[o.status]))throw Error('不允许的状态变更');if(o.status==='待支付')return payment(o.id,'success','门店模拟收款');o.status=body.status;const time=new Date().toISOString();if(o.status==='配送中'){o.tracking='DEMO-MY-'+o.id.slice(3);o.courier='门店配送（模拟）';}o.timeline.push({title:o.status==='配送中'?'门店已出发配送':'顾客已签收',time});save(d);return {ok:true};}
+if(path==='admin/customers')return d.customers;
+if(path==='admin/campaigns'&&method==='GET')return d.campaigns;
+if(path==='admin/campaigns'&&method==='POST'){if(!body.message?.trim()||body.message.length>2000||!['全部客户','新客','高价值客户','沉睡客户'].includes(body.segment))throw Error('请选择分群并填写活动内容');const c={id:crypto.randomUUID(),segment:body.segment,message:body.message,created:new Date().toISOString(),sent:false};d.campaigns.unshift(c);save(d);return {message:'活动草稿已保存，可点击模拟发送'};}
+throw Error('演示接口不存在');}
