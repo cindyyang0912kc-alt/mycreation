@@ -41,3 +41,13 @@
 - MRS25I7BST 与 MAD22S1CWWT 官方说明书链接在预设回复内。
 
 示例温度与清洁周期仅适用于相应型号，不能推广到所有产品。实时模型也可能出错，请核对美国型号、来源与官方说明书。
+
+## 摆拳舞
+
+点击“特朗普同款摆拳”，或在文字框输入“跳舞”，midea 会切换到站立摆拳姿势，左右摇摆12秒。再次点击停止。实时通话接入后，也可口头要求跳舞，由 Realtime 工具调用触发。采用 AI 生成姿势图片与 CSS 动画，不包含背景音乐。
+
+跳舞形象由内置 imagegen 根据现有小熊生成，提示词：保留同一写实白色北极熊幼崽和红围巾，站立于后腿，前爪抬起弯曲作双拳摆动姿势，模仿特朗普常见的左右摇摆舞；保持自然毛发、完整身体、透明背景，无文字、标志或其他政治元素。
+
+跳舞专属装扮：红色棒球帽，正面白色小写“meta”，帽檐下露出金黄色头发。普通对话仍采用原版不戴帽子的写实幼熊。
+
+最终跳舞资源：`assets/midea-bear-dance-hat.png`，使用内置 imagegen 编辑。最终提示词：Change only head accessories: bright red baseball cap with exact lowercase white embroidered word “meta”; golden-yellow swept-over hair peeking from under cap. Preserve the same photorealistic polar bear cub, face, white fur, red knitted scarf, upright double-fist dance pose and transparent background. No extra objects or watermark.

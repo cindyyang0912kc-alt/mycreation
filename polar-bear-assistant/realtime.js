@@ -17,7 +17,7 @@ async function handleRtc(event,epoch){if(epoch!==rtcEpoch)return;
  if(event.type==='error'){toast('实时服务返回错误，请结束后重试');stopRealtime();return}
  if(event.type==='response.done'){
   const status=event.response?.status;if(status==='failed'){toast('本轮实时回答失败，请重试');return}
-  for(const item of event.response?.output||[]){if(item.type!=='function_call'||item.name!=='lookup_support'||handledTools.has(item.call_id))continue;handledTools.add(item.call_id);state('正在查询美的支持资料…');let result;
+  for(const item of event.response?.output||[]){if(item.type==='function_call'&&item.name==='perform_dance'){if(handledTools.has(item.call_id))continue;handledTools.add(item.call_id);window.startDance?.();rtcSend({type:'conversation.item.create',item:{type:'function_call_output',call_id:item.call_id,output:JSON.stringify({status:'started',duration_seconds:12})}});rtcSend({type:'response.create'});continue}if(item.type!=='function_call'||item.name!=='lookup_support'||handledTools.has(item.call_id))continue;handledTools.add(item.call_id);state('正在查询美的支持资料…');let result;
    try{const args=JSON.parse(item.arguments);if(typeof args.question!=='string')throw new Error('查询参数无效');toolAbort=new AbortController();result=await AI.chat(args.question,captureFrame(),toolAbort.signal);if(epoch!==rtcEpoch)return;addMessage('assistant',result.text,result.sources,null,'官方资料检索');}
    catch(e){if(epoch!==rtcEpoch)return;result={error:'资料查询失败，请告知用户暂时无法验证，不能猜测具体操作。'};toast(e.message)}
    if(epoch!==rtcEpoch)return;rtcSend({type:'conversation.item.create',item:{type:'function_call_output',call_id:item.call_id,output:JSON.stringify(result)}});rtcSend({type:'response.create'});
