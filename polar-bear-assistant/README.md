@@ -1,45 +1,43 @@
-# midea · 家电陪伴助手
+# midea · 美国家电陪伴助手
 
-Midea 美国家电助手 H5 交互 Demo。独立设计，非官方客服。无需后端、API 密钥、安装或构建。
+蓝白主题、居中的写实北极熊幼崽与红围巾。独立助手，非美的官方客服。
 
-体验：https://cindyyang0912kc-alt.github.io/mycreation/polar-bear-assistant/
+[体验网页](https://cindyyang0912kc-alt.github.io/mycreation/polar-bear-assistant/) · [完整部署指南](DEPLOY.md)
 
-## 已实现
+## 当前状态
 
-- 原创 SVG 红围巾小北极熊，呼吸、眨眼、挥手与朗读时嘴部动画。
-- 桌面 / 手机响应式界面、预设问题与来源链接。
-- 浏览器语音识别；识别结果由用户确认后发送。不支持时用文字输入。
-- 系统语音合成，优先中文女声，音色选择与试听。系统声音差异可能导致音色不一致。
-- 摄像头本地预览、拍照、附图消息、结束会话与页面切后台释放摄像头。
-- 输入内容安全地作为纯文本渲染，无外部脚本依赖。
+前端可直接打开；未连接后端时仅提供预设示例。已提供 OpenAI 后端及实时通话实现，但尚未部署到用户 Cloudflare 账号，也未用真实密钥验证。
 
-## Demo 边界
+## 功能
 
-没有真实 AI 问答、实时联网搜索、视觉识别、WebRTC 真人通话或云端女声。回复由关键词匹配预设内容；照片仅用于交互展示。所有回复和界面明确标识演示。
+- 写实幼熊透明图片、轻微呼吸、嘴部开合与语音状态波形。实时通话的嘴部动画由音频幅度驱动，系统朗读使用节奏动画；这是 2D 虚拟形象，不是逐音素口型或 3D 数字人。
+- 文字问答：Responses API，默认官方域名联网检索，显示引用。
+- 实时视频对话：持续双向 WebRTC 语音，每 2 秒自动发送摄像头画面。无需手动拍照或提交问题。非完整视频逐帧推理。
+- Realtime 函数调用查询 Midea 官方资料后语音回答，支持语音打断、麦克风静音与结束通话。
+- 对话信息流与底部输入框，移动端布局。
+- OpenAI API Key 只在后端；网页使用独立访问口令，刷新即清除。
 
-照片和消息仅保存在页面内存，不上传或持久化。语音识别由浏览器提供商实现，可能需要网络并发送音频到其服务。字体可能从 Google Fonts 加载，失败时使用系统字体。无分析追踪。
+## 文件
 
-## 官方资料（2026-11-04 核查）
+- `index.html`、`style.css`：页面与布局。
+- `app.js`：文字交互、系统语音与预设演示。
+- `ai.js`：受保护的后端连接及文字问答。
+- `realtime.js`：WebRTC、连续画面采样与工具调用。
+- `backend/worker.mjs`：Cloudflare Worker `/health`、`/chat`、`/realtime`。
+- `backend/wrangler.jsonc`：部署配置，不含密钥。
+- `backend/test.mjs`：模拟上游测试，不调用真实 API。
+- `assets/midea-bear-realistic.png`：使用内置 imagegen 生成的写实幼熊透明图片。
 
-- Support：https://www.midea.com/us/Support
-- FAQ：https://www.midea.com/us/support/faq
-- MRS25I7BST 官方说明书：https://www.midea.com/content/dam/midea-aem/us/refrigerators/side-by-side/mrs25i7bst/MIDEA-MRS25I7BST-USER-MANUAL.pdf
-- MAD22S1CWWT 官方说明书：https://www.midea.com/content/dam/midea-aem/us/air-conditioners/dehumidifiers/mad22s1cwwt/manual/MAD22S1CWWT-User-Guide.pdf
+## 图像生成记录
 
-示例温度和清洁周期仅适用于所标注型号，不能推广到所有产品。其他问题引导到官方支持，不编造操作步骤。
+工具：内置 imagegen；发布副本缩放为 720px 高，保留透明通道。
 
-## 本地运行
+提示词：Use case: photorealistic-natural. Asset type: a transparent cutout character for the center of a blue-and-white appliance assistant webpage. A single adorable realistic polar bear cub, full body seated upright naturally, facing the camera, anatomically plausible small rounded ears, elongated polar bear muzzle, small natural dark eyes, textured black nose, dense fine ivory-white fur with individual strands. Wearing a bright red knitted scarf with short hanging ends. Both front paws resting naturally, relaxed friendly expression, mouth gently closed. High quality naturalistic studio animal portrait, soft diffuse daylight, subtle cool highlights. Centered symmetrical framing with all paws, ears and scarf visible and generous transparent padding. Real cub proportions, not a cartoon teddy bear or human-like mascot, no exaggerated eyes, no blush, no plastic surface. Isolated on genuinely transparent background, no landscape, no pedestal, no objects, no text, no logo, no watermark.
 
-在此目录运行 `python3 -m http.server 8080`，打开 http://localhost:8080 。手机远程访问摄像头须使用 HTTPS；建议直接打开上方 GitHub Pages 链接。麦克风识别依赖浏览器支持、权限及网络。体验时请用系统浏览器，避免内嵌浏览器限制。
+## 演示资料
 
-## 发布
+- https://www.midea.com/us/Support
+- https://www.midea.com/us/support/faq
+- MRS25I7BST 与 MAD22S1CWWT 官方说明书链接在预设回复内。
 
-整个目录放到现有 GitHub Pages 仓库的 `polar-bear-assistant/`。不修改仓库根目录的既有应用。
-
-## 后续接入真实 AI
-
-需单独部署受保护的服务端，将密钥保存在服务端环境变量；接入多模态模型、官方域名检索与引用，以及可控音色的语音合成。当前版本不包含这类接口，避免让 Demo 误被当作线上诊断服务。
-
-## 界面更新
-
-蓝白主题；midea 居中展示；语音与视频入口置于形象下方；对话记录使用整页纵向信息流，轻量输入框位于记录末尾。原体验链接与二维码不变。
+示例温度与清洁周期仅适用于相应型号，不能推广到所有产品。实时模型也可能出错，请核对美国型号、来源与官方说明书。
