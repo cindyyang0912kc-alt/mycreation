@@ -4,7 +4,11 @@
 
 [体验网页](https://cindyyang0912kc-alt.github.io/mycreation/polar-bear-assistant/) · [完整部署指南](DEPLOY.md)
 
-## 当前状态
+## 本地中文版本
+
+现已增加免配置的本地中文模型通道，支持连续语音与自动摄像头画面采样。安装和一键启动说明见 [LOCAL.md](LOCAL.md)。原 GitHub 入口会在当前 Mac 服务在线时自动进入；电脑和临时连接需要保持运行。此通道不使用 OpenAI API。
+
+## OpenAI 可选后端
 
 前端可直接打开；未连接后端时仅提供预设示例。已提供 OpenAI 后端及实时通话实现，但尚未部署到用户 Cloudflare 账号，也未用真实密钥验证。
 
